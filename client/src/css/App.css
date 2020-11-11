@@ -1,0 +1,45 @@
+
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Inter', sans-serif;
+    }
+
+a{
+    color: black;
+    text-decoration: none;
+}
+
+a:hover{
+    text-decoration: underline;
+}
+
+.nav-link:hover{
+    text-decoration: none;
+}
+
+.signinup{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.signinup > *{
+    margin: 10px;
+}
+
+.upvote-color{
+    color: #ff4500;
+}
+
+.downvote-color{
+    color: #7193ff;
+}
+
+i:hover{
+    cursor: pointer;
+}
