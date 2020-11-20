@@ -1,9 +1,14 @@
+const uploader = require("../config/cloudinaryConfig");
 const Post = require("../models/Post");
+const path = require("path");
 
 exports.getSinglePost = async (req, res) => {
   const postId = req.params.postId;
 
-  const post = await (Post.findById(postId)).populate("creator postedSubreddit comments.user", "username name");
+  const post = await Post.findById(postId).populate(
+    "creator postedSubreddit comments.user",
+    "username name"
+  );
   if (!post) return res.status(404).json({ error: "Post not found" });
 
   return res.json({ post });
@@ -11,7 +16,9 @@ exports.getSinglePost = async (req, res) => {
 
 // Create Post
 exports.createPost = async (req, res) => {
-  const { title, message, subreddit } = req.body;
+  const { title, message, subreddit, image } = req.body;
+
+  console.log(req.body);
 
   // Create Post
   const newPost = new Post({
@@ -60,7 +67,9 @@ exports.removePost = async (req, res) => {
 };
 
 exports.getPosts = async (req, res) => {
-  const allPosts = await Post.find({}).populate("creator postedSubreddit").sort("-createdAt");
+  const allPosts = await Post.find({})
+    .populate("creator postedSubreddit")
+    .sort("-createdAt");
   res.json(allPosts);
 };
 
@@ -78,7 +87,8 @@ exports.upvote = async (req, res) => {
     return res.json({ post: upvoteRemoved });
   } else {
     // Remove downvote
-    if (postFound.downvoted.includes(req.user._id)) postFound.downvoted.splice(postFound.downvoted.indexOf(req.user._id), 1);
+    if (postFound.downvoted.includes(req.user._id))
+      postFound.downvoted.splice(postFound.downvoted.indexOf(req.user._id), 1);
     // push the user into the upvote array
     postFound.upvoted.push(req.user._id);
     const upvotedPost = await postFound.save();
@@ -100,7 +110,8 @@ exports.downvote = async (req, res) => {
     return res.json({ post: downvoteRemoved });
   } else {
     // Remove downvote
-    if (postFound.upvoted.includes(req.user._id)) postFound.upvoted.splice(postFound.upvoted.indexOf(req.user._id), 1);
+    if (postFound.upvoted.includes(req.user._id))
+      postFound.upvoted.splice(postFound.upvoted.indexOf(req.user._id), 1);
     // push the user into the upvote array
     postFound.downvoted.push(req.user._id);
     const downvotedPost = await postFound.save();
@@ -157,4 +168,12 @@ exports.removeComment = async (req, res) => {
   const savePost = await post.save();
 
   return res.json({ message: "Comment deleted" });
+};
+
+exports.uploadImage = (req, res) => {
+  console.log(req.file);
+    uploader.upload(req.file.path).then((result) => {
+      res.json(result)
+    })
+  // res.send();
 };

@@ -1,6 +1,5 @@
 import { Button } from "@material-ui/core";
 import { useContext, useEffect, useState } from "react";
-import PostCard from "../../components/PostCard/PostCard.component";
 import PostList from "../../components/PostList/PostList.component";
 import { UserContext } from "../../context/user/UserContext";
 import { getAllPosts } from "./home-helper";

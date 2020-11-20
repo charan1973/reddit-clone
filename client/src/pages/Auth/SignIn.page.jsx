@@ -13,6 +13,7 @@ import { UserContext } from "../../context/user/UserContext";
 import { LOGIN_USER } from "../../context/user/userTypes";
 import { SHOW_ERROR, SHOW_INFO } from "../../context/message/messageTypes";
 import { MessageContext } from "../../context/message/MessageContext";
+import { headerConfig } from "../../headerConfig";
 
 function SignIn() {
   const history = useHistory();
@@ -54,6 +55,10 @@ function SignIn() {
         });
         setTimeout(() => {
           if (localStorage.getItem("user") !== "") {
+            headerConfig.headers["auth-token"] = JSON.parse(
+              localStorage.getItem("user")
+            ).token;
+            console.log(headerConfig);
             history.push("/");
           }
         }, 2000);

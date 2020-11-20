@@ -8,7 +8,7 @@ import {
   Select,
   TextField,
 } from "@material-ui/core";
-
+import ImageUploader from 'react-images-upload';
 import MdEditor from "react-markdown-editor-lite";
 
 import "react-markdown-editor-lite/lib/index.css";
@@ -77,6 +77,8 @@ const CreatePost = (props) => {
       md: true,
     },
   };
+
+
 
   return (
     <div>

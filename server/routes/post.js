@@ -9,7 +9,9 @@ const {
   postComment,
   editComment,
   removeComment,
+  uploadImage,
 } = require("../controllers/post");
+const { multerUpload } = require("../config/multer-setup");
 const { verifyToken } = require("../validator/validator");
 
 const router = require("express").Router();
@@ -21,6 +23,8 @@ router.put("/post/upvote", verifyToken, upvote); //Upvote
 router.put("/post/downvote", verifyToken, downvote); //Downvote
 router.put("/post/edit", verifyToken, editPost); // Edit post
 router.delete("/post/delete", verifyToken, removePost); //Remove post
+
+router.post("/post/image", multerUpload.single("upload"), uploadImage)
 
 router.post("/comment/create/:postId", verifyToken, postComment)
 // router.put("/comment/edit/:postId", verifyToken, editComment)
