@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Button,
   FormControl,
@@ -9,12 +9,12 @@ import {
   TextField,
 } from "@material-ui/core";
 
-import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 
 import "react-markdown-editor-lite/lib/index.css";
 import { createPost, getAllSubreddits } from "./post-helper";
-import { PinDropSharp } from "@material-ui/icons";
+import { MessageContext } from "../../context/message/MessageContext";
+import { SHOW_ERROR, SHOW_INFO } from "../../context/message/messageTypes";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -30,6 +30,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CreatePost = (props) => {
+  const {messageDispatch} = useContext(MessageContext)
+
   const classes = useStyles();
   const [postInput, setPostInput] = useState({
     title: "",
@@ -38,7 +40,7 @@ const CreatePost = (props) => {
     subredditsList: [],
   });
 
-  const { title, message, subredditsList, subreddit } = postInput;
+  const { title, subredditsList, subreddit, message } = postInput;
 
   useEffect(() => {
     getAllSubreddits().then((response) => {
@@ -47,21 +49,23 @@ const CreatePost = (props) => {
     });
   }, []);
 
-  const mdParser = new MarkdownIt();
-
   const handleChange = (e) => {
       const name = e.target.name
     setPostInput({ ...postInput, [name]: e.target.value });
   };
 
-  const handleEditorChange = ({ html, text }) => {
-    setPostInput({ ...postInput, message: html });
+  const handleEditorChange = ({ text }) => {
+    setPostInput({ ...postInput, message: text });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if(!message) messageDispatch({type: SHOW_ERROR, message: "Give a title"})
     createPost(postInput).then((response) => {
-      console.log(response.data);
+      messageDispatch({
+        type: SHOW_INFO,
+        message: response.data.message
+      })
       setTimeout(() => props.history.push("/"), 1000)
     });
   };
@@ -110,7 +114,6 @@ const CreatePost = (props) => {
         />
         <MdEditor
           style={{ height: "300px" }}
-          renderHTML={(text) => mdParser.render(text)}
           onChange={handleEditorChange}
           config={config}
           className={classes.textField}

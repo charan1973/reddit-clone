@@ -12,8 +12,7 @@ exports.createSubreddit = async (req, res) => {
     let {name, about} = req.body;
     name = _.toLower(name)
     const subExists = await Subreddit.findOne({name})
-    if(subExists) return res.status(400).json({error: "Subreddit already exists"})
-
+    if(subExists) return res.json({error: "Subreddit already exists"})
     const newSubreddit = new Subreddit({
         name: name,
         about: about,
@@ -33,9 +32,9 @@ exports.getSubredditWithPosts = async (req, res) => {
     if(!subreddit) return res.status(404).json({error: "Requested subreddit not found on server"})
 
     // Get the number of joined users in the subreddit
-    const joinedPeopleInSub = (await User.find({subredditsJoined: subreddit._id})).length
+    const joinedPeopleInSub = (await User.find({subredditsJoined: subreddit._id}, "_id"))
     //Get all posts for the subreddit
-    const allPosts = await Post.find({postedSubreddit: subreddit._id})
+    const allPosts = await Post.find({postedSubreddit: subreddit._id}).populate("creator postedSubreddit", "username name")
 
     //Send the subscriber count, subreddit details and all posts
     return res.json({subreddit, joinedPeopleInSub, allPosts})

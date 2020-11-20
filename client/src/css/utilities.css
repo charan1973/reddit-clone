@@ -39,6 +39,10 @@
   margin: 4rem;
 }
 
+.mx-auto{
+  margin: 0px auto;
+}
+
 /* Padding */
 .py-1 {
   padding: 1rem 0;
@@ -78,4 +82,34 @@
 
 .p-5 {
   padding: 4rem;
+}
+
+/* Flex */
+
+.flex{
+  display: flex;
+}
+
+.flex-column{
+  flex-direction: column;
+}
+
+.justify-evenly{
+  justify-content: space-evenly;
+}
+
+.justify-center{
+  justify-content: center;
+}
+
+.justify-between{
+  justify-content: space-between;
+}
+
+.text-center{
+  text-align: center;
+}
+
+.pointer{
+  cursor: pointer;
 }

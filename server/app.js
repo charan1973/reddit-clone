@@ -23,11 +23,13 @@ mongoose.connect(
 const authRoutes = require("./routes/auth");
 const subredditRoutes = require("./routes/subreddit")
 const postRoutes = require("./routes/post")
+const userRoutes = require("./routes/user")
 
 //Use routes
 app.use("/api", authRoutes);
 app.use("/api", subredditRoutes)
 app.use("/api", postRoutes)
+app.use("/api", userRoutes)
 
 app.listen(process.env.PORT || 3000, () => {
   console.log("Server started");

@@ -1,10 +1,9 @@
-const { options } = require("@hapi/joi");
 const Post = require("../models/Post");
 
 exports.getSinglePost = async (req, res) => {
   const postId = req.params.postId;
 
-  const post = await Post.findById(postId);
+  const post = await (Post.findById(postId)).populate("creator postedSubreddit comments.user", "username name");
   if (!post) return res.status(404).json({ error: "Post not found" });
 
   return res.json({ post });
@@ -38,12 +37,12 @@ exports.editPost = async (req, res) => {
   const post = await Post.findById(postId);
   // Check if creator and editor are same
   if (post.creator != req.user._id)
-    return res.status(403).json({ error: "You cannot edit this post" });
+    return res.json({ error: "You cannot edit this post" });
 
   post.message = newMessage;
   const updatedPost = await post.save();
 
-  return res.json({ message: "Updated post" });
+  return res.json({ message: "Post updated" });
 };
 
 // Delete post
@@ -61,7 +60,7 @@ exports.removePost = async (req, res) => {
 };
 
 exports.getPosts = async (req, res) => {
-  const allPosts = await Post.find({}).populate("creator postedSubreddit").sort("votes");
+  const allPosts = await Post.find({}).populate("creator postedSubreddit").sort("-createdAt");
   res.json(allPosts);
 };
 
@@ -76,14 +75,14 @@ exports.upvote = async (req, res) => {
     // Remove the upvote
     postFound.upvoted.splice(postFound.upvoted.indexOf(req.user._id), 1);
     const upvoteRemoved = await postFound.save();
-    return res.json({ message: "Upvote removed" });
+    return res.json({ post: upvoteRemoved });
   } else {
     // Remove downvote
     if (postFound.downvoted.includes(req.user._id)) postFound.downvoted.splice(postFound.downvoted.indexOf(req.user._id), 1);
     // push the user into the upvote array
     postFound.upvoted.push(req.user._id);
     const upvotedPost = await postFound.save();
-    return res.json({ message: "Upvoted" });
+    return res.json({ post: upvotedPost });
   }
 };
 
@@ -98,14 +97,14 @@ exports.downvote = async (req, res) => {
     // Remove the downvote
     postFound.downvoted.splice(postFound.downvoted.indexOf(req.user._id), 1);
     const downvoteRemoved = await postFound.save();
-    return res.json({ message: "Downvote removed" });
+    return res.json({ post: downvoteRemoved });
   } else {
     // Remove downvote
     if (postFound.upvoted.includes(req.user._id)) postFound.upvoted.splice(postFound.upvoted.indexOf(req.user._id), 1);
     // push the user into the upvote array
     postFound.downvoted.push(req.user._id);
     const downvotedPost = await postFound.save();
-    return res.json({ message: "Downvoted" });
+    return res.json({ post: downvotedPost });
   }
 };
 
@@ -117,7 +116,7 @@ exports.postComment = async (req, res) => {
   const { comment } = req.body;
 
   const post = await Post.findById(postId);
-  if (!post) return res.status(404).json({ error: "Post not found" });
+  if (!post) return res.json({ error: "Post not found" });
 
   post.comments.push({ user: req.user._id, comment });
   const savePost = await post.save();
@@ -126,6 +125,7 @@ exports.postComment = async (req, res) => {
 };
 
 // Edit comment
+/*
 exports.editComment = async (req, res) => {
   const postId = req.params.postId;
   const { commentId, newComment } = req.body;
@@ -143,6 +143,7 @@ exports.editComment = async (req, res) => {
 
   return res.json({ message: "Comment edited" });
 };
+*/
 
 //Delete Comment
 exports.removeComment = async (req, res) => {
@@ -150,7 +151,7 @@ exports.removeComment = async (req, res) => {
   const { commentId } = req.body;
 
   const post = await Post.findById(postId);
-  if (!post) return res.status(404).json({ error: "Post Not found" });
+  if (!post) return res.json({ error: "Post Not found" });
 
   post.comments.splice(post.comments.indexOf({ _id: commentId }), 1);
   const savePost = await post.save();

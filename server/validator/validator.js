@@ -11,13 +11,13 @@ exports.loginValidation = (data) => {
 
 exports.verifyToken = (req, res, next) => {
     const token = req.header("auth-token")
-    if(!token) return res.status(400).json({error: "Access Denied"})
+    if(!token) return res.json({error: "Access Denied"})
 
     try{
         const verify = jwt.verify(token, process.env.SECRET)
         req.user = verify
         next()
     }catch(err){
-        res.status(400).json({error: "Token invalid"})
+        res.json({error: "Token invalid", err})
     }
 }

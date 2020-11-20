@@ -1,31 +1,18 @@
-import { Link } from "react-router-dom";
-import ReactHtmlParser from "react-html-parser";
+import { useHistory } from "react-router-dom";
 
 import "./PostCard.css";
 import { Box, Card } from "@material-ui/core";
-import TimeStamp from "../TimeStamp/TimeStamp.component";
 import VoteButtons from "../VoteButtons/VoteButtons.component";
+import CreationDetails from "../CreationDetails/CreationDetails.component"
+import MarkdownView from "../MarkdownView/MarkdownView.component";
 
-const CreationDetails = ({ postedSubreddit, postedUser, timestamp }) => {
+const Content = ({ title, message, onClick }) => {
   return (
-    <div style={{ fontSize: "12px" }}>
-      <Link to="#">r/{postedSubreddit}</Link>
-      <span className="grey">&#8231;</span>
-      <span className="grey">posted by</span>
-      <Link to="#" className="grey" style={{ padding: "2px" }}>
-        u/{postedUser}
-      </Link>
-      <span className="grey">&#8231;</span>
-      <TimeStamp timestamp={timestamp} />
-    </div>
-  );
-};
-
-const Content = ({ title, message }) => {
-  return (
-    <div>
+    <div className="pointer" onClick={onClick}>
       <h3>{title}</h3>
-      <div>{ReactHtmlParser(message)}</div>
+      <div>
+        <MarkdownView>{message}</MarkdownView>
+      </div>
     </div>
   );
 };
@@ -40,24 +27,25 @@ const PostCard = ({
   title,
   upvotes,
   downvotes,
-  postId,
-  handleClick
+  postId
 }) => {
+
+  const history = useHistory()
+
   return (
-    <Card style={{ margin: "10px 0px", padding: "20px" }}>
+    <Card className="postcard" style={{ margin: "10px 0px", padding: "20px" }}>
       <CreationDetails
         postedSubreddit={postedSubreddit}
         postedUser={postedUser}
         timestamp={timestamp}
       />
-      <Content title={title} message={message} />
+      <Content onClick={() => history.push(`/post/view/${postId}`)} postId={postId} title={title} message={message} />
       <Box display="flex" justifyContent="space-evenly">
         <VoteButtons
           postId={postId}
           voteCount={voteCount}
           upvotes={upvotes}
           downvotes={downvotes}
-          handleClick={handleClick}
         />
         <span>{commentCount} Comments</span>
       </Box>

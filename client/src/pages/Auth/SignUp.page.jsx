@@ -8,9 +8,13 @@ import Container from "@material-ui/core/Container";
 import { Link, useHistory } from "react-router-dom";
 import { useStyles } from "./auth-styles";
 import { signUpAuth } from "./auth-helper";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { SHOW_ERROR, SHOW_INFO } from "../../context/message/messageTypes";
+import { MessageContext } from "../../context/message/MessageContext";
 
 function SignUp() {
+  const {messageDispatch} = useContext(MessageContext)
+
   const history = useHistory()
   const classes = useStyles();
 
@@ -29,10 +33,28 @@ function SignUp() {
   const handleSubmit = (e) => {
     e.preventDefault();
     signUpAuth(cred).then((response) => {
+      const data = response.data
+      console.log(data);
+      if (data.error) {
+        messageDispatch({
+          type: SHOW_ERROR,
+          message: data.error,
+        });
+      }
+      if (!data.error) {
+        messageDispatch({
+          type: SHOW_INFO,
+          message: "Logged in successfully",
+        });
+        setTimeout(() => {
+          if (localStorage.getItem("user")) {
+            history.push("/login");
+          }
+        }, 2000);
+      }
+
+
       setCred({ username: "", password: "" });
-      setTimeout(() => {
-        history.push("/signin");
-      }, 2000);
     });
   };
 

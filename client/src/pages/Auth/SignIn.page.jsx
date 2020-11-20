@@ -6,38 +6,61 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { Link, useHistory } from "react-router-dom";
-import {useStyles} from "./auth-styles"
-import { useState } from "react";
+import { useStyles } from "./auth-styles";
+import { useContext, useState } from "react";
 import { signInAuth } from "./auth-helper";
+import { UserContext } from "../../context/user/UserContext";
+import { LOGIN_USER } from "../../context/user/userTypes";
+import { SHOW_ERROR, SHOW_INFO } from "../../context/message/messageTypes";
+import { MessageContext } from "../../context/message/MessageContext";
 
 function SignIn() {
-  const history = useHistory()
+  const history = useHistory();
   const classes = useStyles();
 
+  const { userDispatch } = useContext(UserContext);
+  const { messageDispatch } = useContext(MessageContext);
+
   const [cred, setCred] = useState({
-      username: "",
-      password: ""
-  })
+    username: "charan1973",
+    password: "12345678",
+  });
 
-
-
-  const {username, password} = cred
+  const { username, password } = cred;
 
   const handleChange = (e) => {
-    const name = e.target.name
-    setCred({...cred, [name]: e.target.value})
-  }
+    const name = e.target.name;
+    setCred({ ...cred, [name]: e.target.value });
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    signInAuth(cred)
-    setCred({username: "", password: ""})
-    setTimeout(() => {
-      if(localStorage.getItem("user")){
-        history.push("/")
+    e.preventDefault();
+    signInAuth(cred).then((response) => {
+      const data = response.data;
+      if (data.error) {
+        messageDispatch({
+          type: SHOW_ERROR,
+          message: data.error,
+        });
       }
-    }, 2000)
-  }
+      if (!data.error) {
+        userDispatch({
+          type: LOGIN_USER,
+          user: data,
+        });
+        messageDispatch({
+          type: SHOW_INFO,
+          message: "Logged in successfully",
+        });
+        setTimeout(() => {
+          if (localStorage.getItem("user") !== "") {
+            history.push("/");
+          }
+        }, 2000);
+      }
+    });
+    setCred({ username: "", password: "" });
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -92,4 +115,4 @@ function SignIn() {
   );
 }
 
-export default SignIn
+export default SignIn;

@@ -8,12 +8,13 @@ const jwt = require("jsonwebtoken");
 exports.register = async (req, res) => {
   // Check the criteria meets
   const { error } = loginValidation(req.body);
-  if (error) return res.status(400).json({ error: error.details[0].message });
+  if (error) return res.json({ error: error.details[0].message });
+  console.log(req.body);
 
   // Check email exists
   const userExists = await User.findOne({ username: req.body.username });
   if (userExists)
-    return res.status(400).json({ error: "username already exists" });
+    return res.json({ error: "username already exists" });
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -29,7 +30,7 @@ exports.register = async (req, res) => {
       message: "User registered",
     });
   } catch (err) {
-    res.status(400).json({
+    res.json({
       error: err,
     });
   }
@@ -37,7 +38,7 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { error } = loginValidation(req.body);
-  if (error) return res.status(400).json({ error: error.details[0].message });
+  if (error) return res.json({ error: error.details[0].message });
 
   // Check user exists
   const findUser = await User.findOne(
@@ -45,14 +46,14 @@ exports.login = async (req, res) => {
     "username email password"
   );
   if (!findUser)
-    return res.status(400).json({ error: "Username/password is wrong" });
+    return res.json({ error: "Username/password is wrong" });
 
   const validatePassword = await bcrypt.compare(
     req.body.password,
     findUser.password
   );
   if (!validatePassword)
-    return res.status(400).json({ error: "Username/Password is wrong" });
+    return res.json({ error: "Username/Password is wrong" });
 
   const token = jwt.sign({ _id: findUser.id }, process.env.SECRET);
   res
