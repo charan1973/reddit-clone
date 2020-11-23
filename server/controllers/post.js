@@ -1,6 +1,6 @@
 const uploader = require("../config/cloudinaryConfig");
 const Post = require("../models/Post");
-const path = require("path");
+const User = require("../models/User")
 
 exports.getSinglePost = async (req, res) => {
   const postId = req.params.postId;
@@ -14,11 +14,31 @@ exports.getSinglePost = async (req, res) => {
   return res.json({ post });
 };
 
+exports.getPostsFromJoined = async (req, res) => {
+  const user = await User.findById(req.user._id, "subredditsJoined")
+
+  const posts = await Post.find({postedSubreddit: user.subredditsJoined}).populate("creator postedSubreddit", "name username").sort("-createdAt")
+
+  res.json({posts})
+}
+
 // Create Post
 exports.createPost = async (req, res) => {
-  const { title, message, subreddit, image } = req.body;
+  let { title, message, subreddit } = req.body;
+  let image = "";
 
-  console.log(req.body);
+  if (req.file !== undefined) {
+    message = "";
+    const { url, secure_url, public_id, asset_id } = await uploader.upload(
+      req.file.path
+    );
+    image = {
+      url,
+      secure_url,
+      public_id,
+      asset_id,
+    };
+  }
 
   // Create Post
   const newPost = new Post({
@@ -26,6 +46,7 @@ exports.createPost = async (req, res) => {
     message,
     postedSubreddit: subreddit,
     creator: req.user._id,
+    image,
   });
 
   // Save post
@@ -46,6 +67,8 @@ exports.editPost = async (req, res) => {
   if (post.creator != req.user._id)
     return res.json({ error: "You cannot edit this post" });
 
+  if (post.image) return res.json({ error: "Cannot update a image post" });
+
   post.message = newMessage;
   const updatedPost = await post.save();
 
@@ -61,13 +84,17 @@ exports.removePost = async (req, res) => {
   if (post.creator != req.user._id)
     return res.status(403).json({ error: "You cannot delete this post" });
 
+  if (post.image) {
+    const deleteImage = await uploader.destroy(post.image.public_id);
+  }
+
   const deletedPost = await Post.findByIdAndDelete(postId);
 
   return res.json({ message: "Post deleted successfully" });
 };
 
 exports.getPosts = async (req, res) => {
-  const allPosts = await Post.find({})
+  const allPosts = await Post.find({}, "-updatedAt")
     .populate("creator postedSubreddit")
     .sort("-createdAt");
   res.json(allPosts);
@@ -82,13 +109,13 @@ exports.upvote = async (req, res) => {
   // If already upvoted remove the upvote
   if (postFound.upvoted.includes(req.user._id)) {
     // Remove the upvote
-    postFound.upvoted.splice(postFound.upvoted.indexOf(req.user._id), 1);
+    postFound.upvoted.pull({_id: req.user._id})
     const upvoteRemoved = await postFound.save();
     return res.json({ post: upvoteRemoved });
   } else {
     // Remove downvote
     if (postFound.downvoted.includes(req.user._id))
-      postFound.downvoted.splice(postFound.downvoted.indexOf(req.user._id), 1);
+      postFound.downvoted.pull({_id: req.user._id})
     // push the user into the upvote array
     postFound.upvoted.push(req.user._id);
     const upvotedPost = await postFound.save();
@@ -105,13 +132,13 @@ exports.downvote = async (req, res) => {
   // If already downvoted remove the upvote
   if (postFound.downvoted.includes(req.user._id)) {
     // Remove the downvote
-    postFound.downvoted.splice(postFound.downvoted.indexOf(req.user._id), 1);
+    postFound.downvoted.pull(req.user._id);
     const downvoteRemoved = await postFound.save();
     return res.json({ post: downvoteRemoved });
   } else {
     // Remove downvote
     if (postFound.upvoted.includes(req.user._id))
-      postFound.upvoted.splice(postFound.upvoted.indexOf(req.user._id), 1);
+      postFound.upvoted.pull(req.user._id);
     // push the user into the upvote array
     postFound.downvoted.push(req.user._id);
     const downvotedPost = await postFound.save();
@@ -135,26 +162,6 @@ exports.postComment = async (req, res) => {
   return res.json({ message: "Comment added" });
 };
 
-// Edit comment
-/*
-exports.editComment = async (req, res) => {
-  const postId = req.params.postId;
-  const { commentId, newComment } = req.body;
-
-  const post = await Post.findById(postId);
-  if (!post) return res.status(404).json({ error: "Post Not found" });
-
-  post.comments.forEach((comment) => {
-    if (comment._id == commentId) {
-      comment.comment = newComment;
-    }
-  });
-
-  const savePost = await post.save();
-
-  return res.json({ message: "Comment edited" });
-};
-*/
 
 //Delete Comment
 exports.removeComment = async (req, res) => {
@@ -164,16 +171,8 @@ exports.removeComment = async (req, res) => {
   const post = await Post.findById(postId);
   if (!post) return res.json({ error: "Post Not found" });
 
-  post.comments.splice(post.comments.indexOf({ _id: commentId }), 1);
+  post.comments.pull({_id: commentId})
   const savePost = await post.save();
 
   return res.json({ message: "Comment deleted" });
-};
-
-exports.uploadImage = (req, res) => {
-  console.log(req.file);
-    uploader.upload(req.file.path).then((result) => {
-      res.json(result)
-    })
-  // res.send();
 };

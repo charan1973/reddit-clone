@@ -8,7 +8,7 @@ import {
   Select,
   TextField,
 } from "@material-ui/core";
-import ImageUploader from 'react-images-upload';
+import ImageUploader from "react-images-upload";
 import MdEditor from "react-markdown-editor-lite";
 
 import "react-markdown-editor-lite/lib/index.css";
@@ -25,12 +25,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   textField: {
-    marginBottom: theme.spacing(1)
-  }
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 const CreatePost = (props) => {
-  const {messageDispatch} = useContext(MessageContext)
+  const { messageDispatch } = useContext(MessageContext);
 
   const classes = useStyles();
   const [postInput, setPostInput] = useState({
@@ -38,20 +38,33 @@ const CreatePost = (props) => {
     message: "",
     subreddit: "",
     subredditsList: [],
+    image: "",
+    showImageUploader: false,
   });
 
-  const { title, subredditsList, subreddit, message } = postInput;
+  const {
+    title,
+    subredditsList,
+    subreddit,
+    message,
+    image,
+    showImageUploader,
+  } = postInput;
 
   useEffect(() => {
     getAllSubreddits().then((response) => {
-      // console.log(response.data);
       setPostInput({ ...postInput, subredditsList: response.data.subreddits });
     });
   }, []);
 
   const handleChange = (e) => {
-      const name = e.target.name
+    const name = e.target.name;
     setPostInput({ ...postInput, [name]: e.target.value });
+  };
+
+  const onDropImage = (picture) => {
+    setPostInput({ ...postInput, message: "", image: picture });
+    console.log(image);
   };
 
   const handleEditorChange = ({ text }) => {
@@ -60,13 +73,22 @@ const CreatePost = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(!message) messageDispatch({type: SHOW_ERROR, message: "Give a title"})
-    createPost(postInput).then((response) => {
+    if (!title)
+      messageDispatch({ type: SHOW_ERROR, message: "Give a title" });
+
+    const formData = new FormData()
+
+    formData.append("title", title)
+    formData.append("message", message)
+    formData.append("subreddit", subreddit)
+    formData.append("image", image[0])
+
+    createPost(formData).then((response) => {
       messageDispatch({
         type: SHOW_INFO,
-        message: response.data.message
-      })
-      setTimeout(() => props.history.push("/"), 1000)
+        message: response.data.message,
+      });
+      setTimeout(() => props.history.push("/"), 1000);
     });
   };
 
@@ -77,8 +99,6 @@ const CreatePost = (props) => {
       md: true,
     },
   };
-
-
 
   return (
     <div>
@@ -99,7 +119,9 @@ const CreatePost = (props) => {
             </MenuItem>
             {subredditsList.map((subreddit) => {
               return (
-                <MenuItem key={subreddit._id} value={subreddit._id}>{subreddit.name}</MenuItem>
+                <MenuItem key={subreddit._id} value={subreddit._id}>
+                  {subreddit.name}
+                </MenuItem>
               );
             })}
           </Select>
@@ -114,12 +136,45 @@ const CreatePost = (props) => {
           autoComplete="off"
           className={classes.textField}
         />
-        <MdEditor
-          style={{ height: "300px" }}
-          onChange={handleEditorChange}
-          config={config}
-          className={classes.textField}
-        />
+        <Button
+          onClick={() =>
+            setPostInput({ ...postInput, showImageUploader: false })
+          }
+          variant={`${!showImageUploader ? "contained" : "outlined"}`}
+          color={`${!showImageUploader && "primary"}`}
+        >
+          Text
+        </Button>
+        <Button
+          onClick={() =>
+            setPostInput({ ...postInput, showImageUploader: true })
+          }
+          variant={`${showImageUploader ? "contained" : "outlined"}`}
+          color={`${showImageUploader && "primary"}`}
+        >
+          Image
+        </Button>
+
+        {!showImageUploader && (
+          <MdEditor
+            style={{ height: "300px" }}
+            onChange={handleEditorChange}
+            config={config}
+            className={classes.textField}
+          />
+        )}
+        {showImageUploader && (
+          <ImageUploader
+            withIcon={true}
+            buttonText="Choose image"
+            onChange={onDropImage}
+            imgExtension={[".jpg", ".gif", ".png"]}
+            maxFileSize={5242880}
+            withPreview={true}
+            singleImage={true}
+            withLabel={true}
+          />
+        )}
         <Button type="submit" variant="contained" color="secondary">
           Post
         </Button>

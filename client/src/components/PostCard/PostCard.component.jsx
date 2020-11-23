@@ -5,14 +5,14 @@ import { Box, Card } from "@material-ui/core";
 import VoteButtons from "../VoteButtons/VoteButtons.component";
 import CreationDetails from "../CreationDetails/CreationDetails.component"
 import MarkdownView from "../MarkdownView/MarkdownView.component";
+import PostBody from "../PostBody/PostBody.component"
+import numeral from "numeral"
 
-const Content = ({ title, message, onClick }) => {
+const Content = ({ title, message, image, onClick }) => {
   return (
     <div className="pointer" onClick={onClick}>
       <h3>{title}</h3>
-      <div>
-        <MarkdownView>{message}</MarkdownView>
-      </div>
+      <PostBody message={message} image={image} />
     </div>
   );
 };
@@ -24,6 +24,7 @@ const PostCard = ({
   postedUser,
   timestamp,
   message,
+  image,
   title,
   upvotes,
   downvotes,
@@ -39,7 +40,7 @@ const PostCard = ({
         postedUser={postedUser}
         timestamp={timestamp}
       />
-      <Content onClick={() => history.push(`/post/view/${postId}`)} postId={postId} title={title} message={message} />
+      <Content onClick={() => history.push(`/post/view/${postId}`)} postId={postId} title={title} message={message} image={image} />
       <Box display="flex" justifyContent="space-evenly">
         <VoteButtons
           postId={postId}
@@ -47,7 +48,7 @@ const PostCard = ({
           upvotes={upvotes}
           downvotes={downvotes}
         />
-        <span>{commentCount} Comments</span>
+        <span><strong>{numeral(commentCount).format("0a")}</strong> Comments</span>
       </Box>
     </Card>
   );

@@ -17,6 +17,7 @@ import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { MessageContext } from "../../context/message/MessageContext";
 import { SHOW_INFO } from "../../context/message/messageTypes";
+import PostBody from "../../components/PostBody/PostBody.component";
 
 const PostView = ({ match, history }) => {
   const { user } = useContext(UserContext);
@@ -51,6 +52,7 @@ const PostView = ({ match, history }) => {
         timestamp: data.createdAt,
         title: data.title,
         message: data.message,
+        image: data.image,
         votes: data.votes,
         comments: data.comments,
         upvotes: data.upvoted,
@@ -133,13 +135,15 @@ const PostView = ({ match, history }) => {
             />
             {user && user.user.username === postContent.postedUser && (
               <div>
-                <Button
-                  onClick={() => setShowEdit(!showEdit)}
-                  variant="contained"
-                  color="primary"
-                >
-                  Edit
-                </Button>
+                {!postContent.image && (
+                  <Button
+                    onClick={() => setShowEdit(!showEdit)}
+                    variant="contained"
+                    color="primary"
+                  >
+                    Edit
+                  </Button>
+                )}
                 <Button
                   variant="contained"
                   color="secondary"
@@ -154,9 +158,10 @@ const PostView = ({ match, history }) => {
             <h2 className="py-1">{postContent.title}</h2>
             {!showEdit && (
               <div className="py-1">
-                <MarkdownView onChange={handleEditorChange}>
-                  {postContent.message}
-                </MarkdownView>
+                <PostBody
+                  message={postContent.message}
+                  image={postContent.image}
+                />
               </div>
             )}
             {showEdit && (
@@ -226,13 +231,15 @@ const PostView = ({ match, history }) => {
                         >
                           /u/{comment.user.username}
                         </Link>
-                        <Button
-                          onClick={() => handleDeleteComment(comment._id)}
-                          variant="outlined"
-                          color="secondary"
-                        >
-                          Delete
-                        </Button>
+                        {comment.user._id === user.user._id && (
+                          <Button
+                            onClick={() => handleDeleteComment(comment._id)}
+                            variant="outlined"
+                            color="secondary"
+                          >
+                            Delete
+                          </Button>
+                        )}
                       </div>
                       <p className="my-1">{comment.comment}</p>
                     </Card>

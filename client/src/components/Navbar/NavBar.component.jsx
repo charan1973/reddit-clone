@@ -9,6 +9,8 @@ import { LOGOUT_USER } from "../../context/user/userTypes";
 import { MessageContext } from "../../context/message/MessageContext";
 import { SHOW_INFO } from "../../context/message/messageTypes";
 
+
+
 const NavBar = () => {
   const { user, userDispatch } = useContext(UserContext);
   const { messageDispatch } = useContext(MessageContext);
@@ -17,11 +19,11 @@ const NavBar = () => {
     <AppBar color="default" position="static">
       <Toolbar>
         <Box display="flex" justifyContent="space-between" width="100%">
-        <div>
-          <Link to="/">
-            <img height="39px" src={RedditLogo} alt="" />
-          </Link>
-        </div>
+          <div>
+            <Link to="/">
+              <img height="39px" src={RedditLogo} alt="" />
+            </Link>
+          </div>
           {!user && (
             <div className="logged-out">
               <Link className="link-button" to="/login">
@@ -32,15 +34,15 @@ const NavBar = () => {
               </Link>
             </div>
           )}
+
+
+
           {user && (
             <div className="logged-in">
-            <Link className="link-button" to="/subreddit/all">
-              <Button>Subreddit</Button>
-            </Link>
-              <Link
-                className="link-button"
-                to={`/u/${user.user.username}`}
-              >
+              <Link className="link-button" to="/subreddit/all">
+                <Button>Subreddit</Button>
+              </Link>
+              <Link className="link-button" to={`/u/${user.user.username}`}>
                 <Button>Profile</Button>
               </Link>
               <Button

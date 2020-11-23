@@ -3,6 +3,7 @@ import { MessageContext } from "../../context/message/MessageContext";
 import { SHOW_ERROR } from "../../context/message/messageTypes";
 import { UserContext } from "../../context/user/UserContext";
 import {upvote, downvote} from "./vote-helper.js"
+import numeral from "numeral"
 
 const VoteButtons = ({
   voteCount,
@@ -60,8 +61,8 @@ const VoteButtons = ({
           user && upvoteState.includes(user.user._id) && "upvote-color"
         }`}
       ></i>
-      <span style={{ padding: "10px" }}>
-        {voteCountState > 0 || voteCountState < 0 ? voteCountState : "Vote"}
+      <span style={{ display: "inline-block", width: "45px", textAlign: "center" }}>
+        {voteCountState > 0 || voteCountState < 0 ? numeral(voteCountState).format("0 a") : "Vote"}
       </span>
       <i
         name="downvote"

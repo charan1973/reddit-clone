@@ -10,8 +10,8 @@ const postSchema = new mongoose.Schema(
     message: {
       type: String,
     },
-    imageUrl: {
-      type: String,
+    image: {
+      type: Object
     },
     postedSubreddit: {
       type: ObjectId,

@@ -18,6 +18,7 @@ const PostList = ({posts}) => {
             upvotes={post.upvoted}
             downvotes={post.downvoted}
             postId={post._id}
+            image={post.image ? post.image : ""}
           />
         );
       })}

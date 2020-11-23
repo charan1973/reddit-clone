@@ -23,8 +23,8 @@ function SignIn() {
   const { messageDispatch } = useContext(MessageContext);
 
   const [cred, setCred] = useState({
-    username: "charan1973",
-    password: "12345678",
+    username: "",
+    password: "",
   });
 
   const { username, password } = cred;
@@ -58,7 +58,6 @@ function SignIn() {
             headerConfig.headers["auth-token"] = JSON.parse(
               localStorage.getItem("user")
             ).token;
-            console.log(headerConfig);
             history.push("/");
           }
         }, 2000);
