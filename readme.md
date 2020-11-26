@@ -1,4 +1,4 @@
-https://github.com/charan1973/reddit-clone/blob/main/Selection_050.png
+![Screenshot](Selection_050.png)
 
 # Simple reddit clone
 
