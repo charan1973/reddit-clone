@@ -14,9 +14,10 @@ import { LOGIN_USER } from "../../context/user/userTypes";
 import { SHOW_ERROR, SHOW_INFO } from "../../context/message/messageTypes";
 import { MessageContext } from "../../context/message/MessageContext";
 import { headerConfig } from "../../headerConfig";
+import {withRouter} from "react-router-dom"
+import { PinDropSharp } from "@material-ui/icons";
 
-function SignIn() {
-  const history = useHistory();
+function SignIn(props) {
   const classes = useStyles();
 
   const { userDispatch } = useContext(UserContext);
@@ -58,7 +59,7 @@ function SignIn() {
             headerConfig.headers["auth-token"] = JSON.parse(
               localStorage.getItem("user")
             ).token;
-            history.push("/");
+            props.history.goBack()
           }
         }, 2000);
       }
@@ -119,4 +120,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default withRouter(SignIn); 
