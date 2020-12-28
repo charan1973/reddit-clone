@@ -6,7 +6,7 @@
   "scripts": {
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm install --prefix server && npm run build --prefix client",
     "start": "npm start --prefix server",
-    "dev": "npm run build --prefix client && npm run dev --prefix server"
+    "dev": "NPM_CONFIG_PRODUCTION=false npm run build --prefix client && npm run dev --prefix server"
   },
   "repository": {
     "type": "git",
