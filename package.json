@@ -1,0 +1,21 @@
+{
+  "name": "reddit",
+  "version": "1.0.0",
+  "description": "This is a simple reddit clone made out of the stack: MongoDB with Mongoose(ODM), Nodejs with Express, React with Context API and Cloudinary for image hosting.",
+  "main": "\"\"",
+  "scripts": {
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm install --prefix server && npm run build --prefix client",
+    "start": "npm start --prefix server",
+    "dev": "npm run build --prefix client && npm run dev --prefix server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charan1973/reddit-clone.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/charan1973/reddit-clone/issues"
+  },
+  "homepage": "https://github.com/charan1973/reddit-clone#readme"
+}

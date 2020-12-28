@@ -32,6 +32,16 @@ app.use("/api", subredditRoutes);
 app.use("/api", postRoutes);
 app.use("/api", userRoutes);
 
+// Serve static assets if in production
+if (process.env.NODE_ENV === 'production') {
+  // Serve frontend files
+  app.use(express.static("../client/build"));
+  // Getting all the routes
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve("../client/build/index.html"));
+  });
+}
+
 app.listen(process.env.PORT || 3000, () => {
   console.log("Server started");
 });
