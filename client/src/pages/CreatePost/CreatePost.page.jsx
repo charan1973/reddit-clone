@@ -64,7 +64,6 @@ const CreatePost = (props) => {
 
   const onDropImage = (picture) => {
     setPostInput({ ...postInput, message: "", image: picture });
-    console.log(image);
   };
 
   const handleEditorChange = ({ text }) => {
@@ -73,8 +72,13 @@ const CreatePost = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title)
+    if (!title){
       messageDispatch({ type: SHOW_ERROR, message: "Give a title" });
+      return ""
+    }
+    if(!subreddit){
+      messageDispatch({type: SHOW_ERROR, message: "Select a subreddit"})
+    }
 
     const formData = new FormData()
 
@@ -114,9 +118,6 @@ const CreatePost = (props) => {
             name="subreddit"
             label="Subreddit"
           >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
             {subredditsList.map((subreddit) => {
               return (
                 <MenuItem key={subreddit._id} value={subreddit._id}>
@@ -177,6 +178,9 @@ const CreatePost = (props) => {
         )}
         <Button type="submit" variant="contained" color="secondary">
           Post
+        </Button>
+        <Button onClick={() => props.history.push("/")} color="primary" variant="outlined">
+          Cancel
         </Button>
       </form>
     </div>

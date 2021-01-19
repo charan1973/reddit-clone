@@ -193,7 +193,7 @@ const PostView = ({ match, history }) => {
 
         <div id="comments">
           <h3 className="my-1">Comments</h3>
-          {user ? (
+          {user.user.username ? (
             <form onSubmit={handleCommentSubmit}>
               <TextField
                 onChange={(e) => setNewComment(e.target.value)}

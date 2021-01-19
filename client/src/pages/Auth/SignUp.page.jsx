@@ -44,7 +44,7 @@ function SignUp() {
       if (!data.error) {
         messageDispatch({
           type: SHOW_INFO,
-          message: "Logged in successfully",
+          message: "Signed up successfully",
         });
         setTimeout(() => {
           if (localStorage.getItem("user")) {
