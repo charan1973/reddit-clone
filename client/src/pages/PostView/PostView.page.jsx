@@ -193,7 +193,7 @@ const PostView = ({ match, history }) => {
 
         <div id="comments">
           <h3 className="my-1">Comments</h3>
-          {user.user.username ? (
+          {user && user.user ? (
             <form onSubmit={handleCommentSubmit}>
               <TextField
                 onChange={(e) => setNewComment(e.target.value)}
@@ -231,7 +231,7 @@ const PostView = ({ match, history }) => {
                         >
                           /u/{comment.user.username}
                         </Link>
-                        {comment.user._id === user.user._id && (
+                        {user.user && comment.user._id === user.user._id && (
                           <Button
                             onClick={() => handleDeleteComment(comment._id)}
                             variant="outlined"
