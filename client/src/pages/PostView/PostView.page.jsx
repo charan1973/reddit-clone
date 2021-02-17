@@ -23,6 +23,7 @@ const PostView = ({ match, history }) => {
   const { user } = useContext(UserContext);
   const { messageDispatch } = useContext(MessageContext);
 
+
   const [postContent, setPostContent] = useState({
     postId: "",
     postedSubreddit: "",
@@ -131,9 +132,9 @@ const PostView = ({ match, history }) => {
             <CreationDetails
               postedSubreddit={postContent.postedSubreddit}
               postedUser={postContent.postedUser}
-              timestamp="2020-11-02"
+              timestamp={postContent.createdAt}
             />
-            {user && user.user.username === postContent.postedUser && (
+            {user && user.username === postContent.postedUser && (
               <div>
                 {!postContent.image && (
                   <Button
@@ -231,7 +232,7 @@ const PostView = ({ match, history }) => {
                         >
                           /u/{comment.user.username}
                         </Link>
-                        {user.user && comment.user._id === user.user._id && (
+                        {user && comment.user._id === user.user._id && (
                           <Button
                             onClick={() => handleDeleteComment(comment._id)}
                             variant="outlined"

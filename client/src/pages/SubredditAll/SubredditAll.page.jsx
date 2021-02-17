@@ -3,10 +3,12 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { MessageContext } from "../../context/message/MessageContext";
 import { SHOW_INFO } from "../../context/message/messageTypes";
+import { UserContext } from "../../context/user/UserContext";
 import { createSubreddit, getAllSubreddit } from "./subredditall-helper";
 
 const SubredditAll = () => {
   const { messageDispatch } = useContext(MessageContext);
+  const {user} = useContext(UserContext)
 
   const [subreddits, setSubreddits] = useState([]);
 
@@ -49,6 +51,8 @@ const SubredditAll = () => {
 
   return (
     <div>
+      {
+        user && (
       <div className="flex justify-center flex-column">
         <Button
           variant="contained"
@@ -105,6 +109,8 @@ const SubredditAll = () => {
           </div>
         )}
       </div>
+        )
+      }
 
       <div id="subreddit-list">
         {subreddits &&
